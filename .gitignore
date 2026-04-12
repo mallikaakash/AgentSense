@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+.next/
+dist/
+build/
+*.tsbuildinfo
+
+# Environment files (contain secrets and wallet keys)
+.env
+.env.local
+.env.*.local
+.env.example
+
+# Credentials and secrets
+wallets.txt
+*.pem
+*.key
+credentials.json
+
+# Agent and project config
+.agents/
+.claude/
+.codex/
+
+# Temporary and log files
+*.log
+*.tmp
+.DS_Store
+*.swp
+*.swo
+
+# Vision, planning and wallet files
+vision.md
+BUILDGUIDE.md
+content.txt
+plan.md
+wallets.txt
+
+# MCP and skill definitions
+.mcps/
+
+# Terminals and transcripts
+terminals/
+agent-transcripts/

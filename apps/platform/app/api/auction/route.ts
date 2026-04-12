@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { runAuction } from "@/lib/auction"
 import { store } from "@/lib/store"
-import {
-  createVoucher,
-  signCommitment,
-} from "@/lib/mpp-channel"
+import { createVoucher, getChannelsByAdvertiser, COMMITMENT_SECRET_HEX } from "@/lib/mpp-channel"
 
 // Publisher share of the advertiser fee (0.6 - 0.8%)
 const PUBLISHER_FEE_SHARE = 0.007 // 0.7%
@@ -55,8 +52,7 @@ export async function POST(request: NextRequest) {
     // ── MPP: Issue voucher for this ad payment ─────────────────────────────
     // The platform holds the advertiser's budget as MPP channel vouchers.
     // Each query match generates an off-chain signed commitment (voucher)
-    // that the advertiser signed. This is the MPP "charge" mode working
-    // with signed Soroban auth entries for the x402 payment.
+    // MPP Channel voucher creation for on-chain settlement tracking
     let mppVoucher: {
       voucherId: string
       cumulativeAmount: string
@@ -65,7 +61,6 @@ export async function POST(request: NextRequest) {
 
     if (result.sessionId && result.advertiserId && result.deductedAmount > 0) {
       // Find the advertiser's channel (created via /api/channel/create)
-      const { getChannelsByAdvertiser } = await import("@/lib/mpp-channel")
       const channels = getChannelsByAdvertiser(result.advertiserId)
       const activeChannel = channels.find((ch) => ch.status === "open")
 
@@ -75,23 +70,13 @@ export async function POST(request: NextRequest) {
 
         // Check budget
         if (BigInt(newCumulative) <= BigInt(activeChannel.totalBudget)) {
-          // Sign commitment as the platform (we hold the channel funds)
-          // In real MPP, the advertiser signs the commitment (push mode)
-          // For our MVP, the platform signs on behalf of the advertiser
-          // since the advertiser deposited funds into the channel
-          const prefix = `agentsense-channel-v1:${activeChannel.id}:voucher`
-          const signature = signCommitment(
-            "SCDLQYN23ZNH2VDO4WJXHQBJKDRYOQN2ZBU7AUHEFCVHZGIQB5QWZQSX", // advertiser's secret (signs commitment)
-            prefix,
-            newCumulative
-          )
-
-          // Create voucher via the mpp-channel library
+          // createVoucher handles Ed25519 signing internally using on-chain commitment format
+          // The commitment secret is the 32-byte Ed25519 seed, not the Stellar account secret
           try {
             const voucher = createVoucher({
               channelId: activeChannel.id,
               paymentAmount: bidStroops,
-              advertiserSecret: "SCDLQYN23ZNH2VDO4WJXHQBJKDRYOQN2ZBU7AUHEFCVHZGIQB5QWZQSX",
+              advertiserSecret: COMMITMENT_SECRET_HEX, // Ed25519 seed for commitment signing
               queryId: `q_${Date.now()}`,
             })
             mppVoucher = {
@@ -99,9 +84,8 @@ export async function POST(request: NextRequest) {
               cumulativeAmount: voucher.cumulativeAmount,
               signature: voucher.signature,
             }
-          } catch {
-            // Voucher creation may fail if cumulative is already used
-            // (duplicate call for same query) — skip silently
+          } catch (err) {
+            console.error("[auction] createVoucher failed:", err)
           }
         }
       }

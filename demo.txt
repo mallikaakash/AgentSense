@@ -1,0 +1,10 @@
+curl -X POST http://localhost:3000/api/channel/create \
+  -H "Content-Type: application/json" \
+  -d '{"advertiserId": "adv_muscleblaze", "budget": 5.0, "keywords": ["protein"], "bidPerQuery": 0.005, "sponsoredContent": "MuscleBlaze Whey Protein - 20% off"}'
+
+
+curl -X POST http://localhost:3001/api/query \
+  -H "Content-Type: application/json" \
+  -d '{"query": "best protein supplement for muscle building"}'
+
+  https://stellar.expert/explorer/testnet/contract/CAFZZDYGZSULXCBEN7BNTBDX2DWUTWKTAQQY5ZY7NFXPCTY4RLORFAIJ

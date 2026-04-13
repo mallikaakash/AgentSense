@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgentSense — AdSense for the Agent Web</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --surface2: #1e1e1e;
+      --border: #2a2a2a;
+      --text: #e0e0e0;
+      --muted: #666;
+      --accent: #f0f0f0;
+      --green: #4ade80;
+      --blue: #60a5fa;
+      --amber: #fbbf24;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Slide ── */
+    .slide {
+      min-height: 100vh;
+      padding: 80px 100px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    .slide-num {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 2px;
+    }
+
+    .slide-title {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 16px;
+      letter-spacing: -1px;
+    }
+
+    .slide-sub {
+      font-size: 18px;
+      color: var(--muted);
+      margin-bottom: 60px;
+      max-width: 700px;
+    }
+
+    /* ── Cover ── */
+    .cover .logo {
+      font-size: 96px;
+      font-weight: 800;
+      letter-spacing: -3px;
+      color: var(--accent);
+      margin-bottom: 24px;
+    }
+
+    .cover .tagline {
+      font-size: 24px;
+      color: var(--muted);
+      margin-bottom: 80px;
+    }
+
+    .cover .url {
+      font-size: 14px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      display: inline-block;
+      border-radius: 4px;
+    }
+
+    .cover .three-urls {
+      display: flex;
+      gap: 24px;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+
+    .cover .url-card {
+      border: 1px solid var(--border);
+      padding: 16px 24px;
+      border-radius: 6px;
+      background: var(--surface);
+    }
+
+    .cover .url-card .label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .cover .url-card .addr {
+      font-size: 14px;
+      color: var(--accent);
+    }
+
+    /* ── Grid layouts ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: start;
+    }
+
+    .three-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 32px;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 32px;
+    }
+
+    .card .card-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .card .card-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .card .card-body {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    /* ── Flow boxes ── */
+    .flow-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .flow-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 28px;
+      text-align: center;
+      flex: 1;
+    }
+
+    .flow-box .fb-role {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .flow-box .fb-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .flow-box .fb-detail {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .flow-arrow {
+      font-size: 20px;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .flow-arrow.green { color: var(--green); }
+    .flow-arrow.blue { color: var(--blue); }
+
+    /* ── Architecture diagram ── */
+    .arch-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 48px;
+      margin-top: 40px;
+      overflow-x: auto;
+    }
+
+    .arch-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 32px;
+    }
+
+    .arch-node {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 28px;
+      text-align: center;
+      min-width: 180px;
+    }
+
+    .arch-node .an-role {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .arch-node .an-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .arch-node .an-tech {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .arch-arrow {
+      font-size: 18px;
+      color: var(--muted);
+      padding: 0 12px;
+    }
+
+    .arch-arrow-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+      padding: 0 12px;
+      white-space: nowrap;
+    }
+
+    /* ── Swimlane ── */
+    .swimlane {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px 48px;
+      margin-top: 40px;
+      overflow-x: auto;
+    }
+
+    .swimlane-header {
+      display: flex;
+      margin-bottom: 0;
+    }
+
+    .swim-col-header {
+      flex: 1;
+      text-align: center;
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--muted);
+    }
+
+    .swim-col-header.agent { color: var(--blue); }
+    .swim-col-header.publisher { color: var(--green); }
+    .swim-col-header.platform { color: var(--amber); }
+    .swim-col-header.stellar { color: var(--muted); }
+
+    .swim-row {
+      display: flex;
+      align-items: stretch;
+      border-bottom: 1px solid var(--border);
+      min-height: 72px;
+    }
+
+    .swim-row:last-child { border-bottom: none; }
+
+    .swim-label {
+      width: 60px;
+      padding: 12px 8px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      border-right: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      writing-mode: vertical-lr;
+      transform: rotate(180deg);
+      justify-content: center;
+    }
+
+    .swim-cell {
+      flex: 1;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-right: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text);
+      text-align: center;
+      gap: 8px;
+    }
+
+    .swim-cell:last-child { border-right: none; }
+    .swim-cell .pill {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .pill.x402 { background: #1a2a1a; color: var(--green); border: 1px solid #2a4a2a; }
+    .pill.auction { background: #1a1a2a; color: var(--blue); border: 1px solid #2a2a4a; }
+    .pill.settle { background: #1a2a1a; color: var(--green); border: 1px solid #2a4a2a; }
+    .pill.soroban { background: #1a1a1a; color: var(--amber); border: 1px solid #333; }
+    .pill.voucher { background: #1a2a1a; color: var(--green); border: 1px solid #2a4a2a; }
+
+    /* ── Stats ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-top: 40px;
+    }
+
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 28px;
+      text-align: center;
+    }
+
+    .stat-box .stat-val {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .stat-box .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ── Bullet list ── */
+    .bullets {
+      list-style: none;
+      margin-top: 24px;
+    }
+
+    .bullets li {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 16px;
+      color: var(--text);
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .bullets li::before {
+      content: '—';
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .bullets li strong {
+      color: var(--accent);
+    }
+
+    /* ── Code / tx ── */
+    .tx-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      margin-top: 24px;
+      font-size: 13px;
+      word-break: break-all;
+    }
+
+    .tx-box .tx-hash {
+      color: var(--green);
+      font-family: inherit;
+    }
+
+    .tx-box .tx-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .tx-link {
+      color: var(--blue);
+      text-decoration: none;
+      font-size: 13px;
+      margin-top: 8px;
+      display: inline-block;
+    }
+
+    .tx-link:hover { text-decoration: underline; }
+
+    /* ── Wallets table ── */
+    .wallet-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 32px;
+      font-size: 14px;
+    }
+
+    .wallet-table th {
+      text-align: left;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .wallet-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .wallet-table tr:last-child td { border-bottom: none; }
+
+    .wallet-table .role-badge {
+      font-size: 11px;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-weight: 600;
+    }
+
+    .role-agent { background: #1a1a2a; color: var(--blue); }
+    .role-pub { background: #1a2a1a; color: var(--green); }
+    .role-adv { background: #1a1a1a; color: var(--amber); border: 1px solid #333; }
+
+    .mono { font-family: inherit; font-size: 13px; }
+
+    /* ── Quote callout ── */
+    .callout {
+      border-left: 3px solid var(--amber);
+      padding: 16px 24px;
+      background: var(--surface);
+      border-radius: 0 8px 8px 0;
+      margin: 32px 0;
+      font-size: 16px;
+      color: var(--text);
+      font-style: italic;
+    }
+
+    /* ── Section header (full-width accent bar) ── */
+    .section-bar {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 100px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+    }
+
+    .section-bar .section-name {
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .section-bar .section-pages {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .section-bar .section-logo {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+      margin-right: auto;
+    }
+
+    /* nav dots */
+    .nav-dots {
+      position: fixed;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 200;
+    }
+
+    .nav-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+
+    .nav-dot.active { background: var(--accent); }
+
+    /* Highlight keywords */
+    .hl { color: var(--accent); }
+    .hl-green { color: var(--green); }
+    .hl-blue { color: var(--blue); }
+    .hl-amber { color: var(--amber); }
+
+    /* Spacer */
+    .sp { height: 48px; }
+    .sp-sm { height: 24px; }
+
+    /* Scroll indicator */
+    .scroll-hint {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { opacity: 0.4; transform: translateX(-50%) translateY(0); }
+      50% { opacity: 1; transform: translateX(-50%) translateY(-6px); }
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .slide { padding: 60px 40px; }
+      .two-col { grid-template-columns: 1fr; }
+      .three-col { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .arch-row { flex-wrap: wrap; gap: 12px; }
+      .section-bar { padding: 16px 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav dots -->
+  <div class="nav-dots" id="navDots"></div>
+
+  <!-- ── SLIDE 1: COVER ── -->
+  <div class="slide cover" id="s1">
+    <div class="slide-num">01 / 07</div>
+    <div class="logo">AgentSense</div>
+    <div class="tagline">AdSense for the agent web</div>
+    <div class="url">github.com/mallikaakash/AgentSense</div>
+    <div class="sp"></div>
+    <div class="scroll-hint">SCROLL TO EXPLORE</div>
+  </div>
+
+  <!-- ── SLIDE 2: PROBLEM ── -->
+  <div class="slide" id="s2">
+    <div class="slide-num">02 / 07</div>
+    <div class="slide-title">The Problem</div>
+    <div class="slide-sub">AI agents read websites every day. Publishers have no way to monetize this traffic.</div>
+
+    <div class="callout">
+      "Google AdSense doesn't work for AI agents. There's no way to detect, price, or monetize agent-generated traffic."
+    </div>
+
+    <ul class="bullets">
+      <li><strong>Agents scrape content</strong> without paying publishers</li>
+      <li><strong>No micro-payment infrastructure</strong> exists for machine-to-machine HTTP requests</li>
+      <li><strong>Advertisers have no mechanism</strong> to reach AI agents mid-query</li>
+      <li><strong>Existing paywalls</strong> are friction-heavy and designed for humans, not APIs</li>
+    </ul>
+
+    <div class="sp"></div>
+    <div class="slide-title" style="font-size: 28px; color: var(--green);">AgentSense solves all three.</div>
+  </div>
+
+  <!-- ── SLIDE 3: SOLUTION ── -->
+  <div class="slide" id="s3">
+    <div class="slide-num">03 / 07</div>
+    <div class="slide-title">The Solution</div>
+    <div class="slide-sub">A monetization layer for content that AI agents read.</div>
+
+    <div class="two-col">
+      <div>
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-label">For Publishers</div>
+          <div class="card-title">Earn USDC per query</div>
+          <div class="card-body">
+            Paste one middleware function onto any endpoint. Every AI query earns you USDC — automatically, on-chain, with no contracts to manage.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">For Advertisers</div>
+          <div class="card-title">Bid for agent attention</div>
+          <div class="card-body">
+            Fund a session with keywords and a bid. When an agent queries matching content, your sponsored result is injected into the response.
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-label">For Agents</div>
+          <div class="card-title">Pay transparently</div>
+          <div class="card-body">
+            $0.01 per query, paid in USDC via Stellar. Single HTTP request-response cycle. No gas fees. No wallet drainage.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">The Platform</div>
+          <div class="card-title">Runs the auction</div>
+          <div class="card-body">
+            AgentSense takes 0.7% from ad budgets. Publishers earn 0.7% of advertiser bids per query. The platform sets prices.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 4: ARCHITECTURE ── -->
+  <div class="slide" id="s4">
+    <div class="slide-num">04 / 07</div>
+    <div class="slide-title">Architecture</div>
+    <div class="slide-sub">Three actors. Two independent payment layers. One on-chain settlement.</div>
+
+    <div class="arch-diagram">
+      <!-- Row 1: The three actors -->
+      <div class="arch-row">
+        <div class="arch-node" style="border-color: #2a3a4a;">
+          <div class="an-role">Actor</div>
+          <div class="an-name">Demo Agent</div>
+          <div class="an-tech">x402 Client · Signs Soroban auth entries</div>
+        </div>
+        <div class="arch-arrow">────────────</div>
+        <div class="arch-node" style="border-color: #1a3a2a;">
+          <div class="an-role">Actor</div>
+          <div class="an-name">Demo Publisher</div>
+          <div class="an-tech">agentGate() middleware · Returns 402</div>
+        </div>
+        <div class="arch-arrow">────────────</div>
+        <div class="arch-node" style="border-color: #3a2a1a;">
+          <div class="an-role">Actor</div>
+          <div class="an-name">Platform</div>
+          <div class="an-tech">Auction API · Dashboards · MPP Channel</div>
+        </div>
+      </div>
+
+      <!-- Row 2: Payment 1 -->
+      <div class="arch-row" style="margin-top: -8px;">
+        <div class="arch-node" style="background: #0d1a26; min-width: 220px;">
+          <div class="an-role" style="color: var(--blue);">Layer 1</div>
+          <div class="an-name" style="color: var(--blue);">x402 Payment</div>
+          <div class="an-tech">Agent → Publisher · $0.01 USDC per query · OZ Channels</div>
+        </div>
+        <div class="arch-arrow" style="color: var(--blue);">⟶</div>
+        <div class="arch-node" style="background: #0d1a26; min-width: 180px;">
+          <div class="an-role" style="color: var(--blue);">402 + Payment</div>
+          <div class="an-tech">Soroban auth entry signed by agent wallet</div>
+        </div>
+        <div class="arch-arrow" style="color: var(--blue);">⟶</div>
+        <div class="arch-node" style="background: #0d1a26; min-width: 180px;">
+          <div class="an-role" style="color: var(--blue);">OZ Facilitator</div>
+          <div class="an-tech">Verifies + settles on Stellar testnet</div>
+        </div>
+      </div>
+
+      <!-- Row 3: Payment 2 -->
+      <div class="arch-row" style="margin-top: -8px;">
+        <div class="arch-node" style="background: #0d1a0d; min-width: 220px;">
+          <div class="an-role" style="color: var(--green);">Layer 2</div>
+          <div class="an-name" style="color: var(--green);">MPP Channel</div>
+          <div class="an-tech">Advertiser → Platform · Ed25519 vouchers · On-chain close</div>
+        </div>
+        <div class="arch-arrow" style="color: var(--green);">⟶</div>
+        <div class="arch-node" style="background: #0d1a0d; min-width: 180px;">
+          <div class="an-role" style="color: var(--green);">Deposit</div>
+          <div class="an-tech">10 USDC in one-way-channel contract (real on-chain)</div>
+        </div>
+        <div class="arch-arrow" style="color: var(--green);">⟶</div>
+        <div class="arch-node" style="background: #0d1a0d; min-width: 180px;">
+          <div class="an-role" style="color: var(--green);">Voucher</div>
+          <div class="an-tech">Ed25519 sig over commitment data per query</div>
+        </div>
+      </div>
+
+      <!-- Smart contract row -->
+      <div class="arch-row" style="margin-top: 8px;">
+        <div class="arch-node" style="background: #1a140d; border-color: #3a2a1a; min-width: 100%;">
+          <div class="an-role" style="color: var(--amber);">Smart Contract</div>
+          <div class="an-name" style="color: var(--amber);">
+            CAFZZDYGZSULXCBEN7BNTBDX2DWUTWKTAQQY5ZY7NFXPCTY4RLORFAIJ
+          </div>
+          <div class="an-tech">one-way-channel Soroban contract · Stellar testnet · Funded with real USDC · Vouchers verified on-chain</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-val">$0.01</div>
+        <div class="stat-label">Per Query (x402)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val">0.7%</div>
+        <div class="stat-label">Publisher Cut</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val">10 USDC</div>
+        <div class="stat-label">Channel Deposit</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val">3</div>
+        <div class="stat-label">Testnet Wallets</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 5: SWIMLANE ── -->
+  <div class="slide" id="s5">
+    <div class="slide-num">05 / 07</div>
+    <div class="slide-title">Payment Flow</div>
+    <div class="slide-sub">Two independent on-chain settlement layers — both real, both verifiable.</div>
+
+    <div class="swimlane">
+      <!-- Headers -->
+      <div class="swimlane-header">
+        <div class="swim-col-header agent">Agent</div>
+        <div class="swim-col-header publisher">Publisher</div>
+        <div class="swim-col-header platform">Platform</div>
+        <div class="swim-col-header stellar">Stellar</div>
+      </div>
+
+      <!-- Row 1: x402 Challenge -->
+      <div class="swim-row">
+        <div class="swim-label">x402</div>
+        <div class="swim-cell">─── Query ───</div>
+        <div class="swim-cell">agentGate() detects agent</div>
+        <div class="swim-cell">─── Auction ──</div>
+        <div class="swim-cell">No tx</div>
+      </div>
+
+      <div class="swim-row">
+        <div class="swim-label"></div>
+        <div class="swim-cell">─── 402 + Payment Req ──</div>
+        <div class="swim-cell">
+          <span class="pill x402">402</span> Payment Required
+        </div>
+        <div class="swim-cell"> Auction result ←</div>
+        <div class="swim-cell">No tx</div>
+      </div>
+
+      <div class="swim-row">
+        <div class="swim-label"></div>
+        <div class="swim-cell">
+          <span class="pill soroban">Soroban</span> Signs auth entry · $0.01 USDC
+        </div>
+        <div class="swim-cell">
+          <span class="pill settle">Settle</span> processSettlement()
+        </div>
+        <div class="swim-cell">Verify + forward</div>
+        <div class="swim-cell">
+          <span class="pill settle">ON-CHAIN</span> Transfer USDC
+        </div>
+      </div>
+
+      <!-- Row 4: Content + Sponsored -->
+      <div class="swim-row">
+        <div class="swim-label"></div>
+        <div class="swim-cell">─── Content + Sponsored ──</div>
+        <div class="swim-cell">
+          <span class="pill x402">200</span> Serve response
+        </div>
+        <div class="swim-cell">Publishes result</div>
+        <div class="swim-cell">No tx</div>
+      </div>
+
+      <!-- Row 5: MPP Voucher -->
+      <div class="swim-row">
+        <div class="swim-label">MPP</div>
+        <div class="swim-cell">─── Voucher ──</div>
+        <div class="swim-cell">Generate mppVoucher</div>
+        <div class="swim-cell">
+          <span class="pill voucher">Voucher</span> Ed25519 sig
+        </div>
+        <div class="swim-cell">No tx</div>
+      </div>
+
+      <!-- Row 6: Channel Close -->
+      <div class="swim-row">
+        <div class="swim-label"></div>
+        <div class="swim-cell">─── Budget deposited ──</div>
+        <div class="swim-cell">Channel contract</div>
+        <div class="swim-cell">10 USDC on-chain</div>
+        <div class="swim-cell">
+          <span class="pill soroban">ON-CHAIN</span> Deposit verified
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col" style="margin-top: 40px;">
+      <div class="card">
+        <div class="card-label">x402 Layer</div>
+        <div class="card-title">Agent → Publisher</div>
+        <div class="card-body">
+          Per-query on-chain payment. The agent signs a Soroban auth entry in the HTTP response. OZ Channels facilitator verifies and settles on Stellar. TX hash is live on Stellar Expert.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">MPP Layer</div>
+        <div class="card-title">Advertiser → Platform</div>
+        <div class="card-body">
+          Off-chain vouchers signed with Ed25519, redeemable against the on-chain channel contract. Advertiser deposited 10 USDC upfront. Vouchers accumulate. Channel close is on-chain.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 6: LIVE TX ── -->
+  <div class="slide" id="s6">
+    <div class="slide-num">06 / 07</div>
+    <div class="slide-title">Live Transactions</div>
+    <div class="slide-sub">Every transaction is real and verifiable on Stellar testnet.</div>
+
+    <div class="two-col">
+      <div>
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-label">On-Chain</div>
+          <div class="card-title">Channel Contract</div>
+          <div class="card-body">
+            <span class="mono" style="color: var(--green); font-size: 12px;">CAFZZDYGZSULXCBEN7BNTBDX2DWUTWKTAQQY5ZY7NFXPCTY4RLORFAIJ</span>
+          </div>
+          <a class="tx-link" href="https://stellar.expert/explorer/testnet/contract/CAFZZDYGZSULXCBEN7BNTBDX2DWUTWKTAQQY5ZY7NFXPCTY4RLORFAIJ" target="_blank">
+            stellar.expert ↗
+          </a>
+        </div>
+
+        <div class="card">
+          <div class="card-label">On-Chain</div>
+          <div class="card-title">Channel Deposit</div>
+          <div class="card-body">10,000,000 stroops (10 USDC) deposited during contract deployment by advertiser wallet.</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="card-label">Recent x402 Payment</div>
+          <div class="card-title">Agent → Publisher</div>
+          <div class="tx-box">
+            <div class="tx-label">TX Hash</div>
+            <div class="tx-hash">d4edc2dfdae745b50e98c81313e812073579bc5aaa7a4dc39deb6e3080a1f6a9</div>
+            <a class="tx-link" href="https://stellar.expert/explorer/testnet/tx/d4edc2dfdae745b50e98c81313e812073579bc5aaa7a4dc39deb6e3080a1f6a9" target="_blank">
+              View on Stellar Expert ↗
+            </a>
+          </div>
+          <div class="sp-sm"></div>
+          <div class="tx-box">
+            <div class="tx-label">MPP Voucher (Ed25519 sig)</div>
+            <div class="tx-hash" style="font-size: 11px; word-break: break-all;">
+              a4694217ab4eaabaa57b709638ce000ec753d64bf5e233e649243a640cc2fc889deccf3a1d361484ad3f88adfd8b2640c5c8418ea227859cf057fbb4c2a08e08
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sp"></div>
+
+    <div class="card">
+      <div class="card-label">Test Wallets</div>
+      <table class="wallet-table">
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Public Key</th>
+            <th>Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="role-badge role-agent">Agent (payer)</span></td>
+            <td class="mono">GAFVVNKFZGTAZRESL2GHIXH6RGRZ6L45L3SXFHIGFZIGA7T2JKUGQ42G</td>
+            <td>~10,000 XLM + 20 USDC</td>
+          </tr>
+          <tr>
+            <td><span class="role-badge role-pub">Publisher (earner)</span></td>
+            <td class="mono">GCM5SIFSH3ZB2BITJNP46SD7L4T2FPGNQJ3KHWG4RBHQTNG4PPKNUJQZ</td>
+            <td>Receives x402 payments</td>
+          </tr>
+          <tr>
+            <td><span class="role-badge role-adv">Advertiser (bidder)</span></td>
+            <td class="mono">GBYNUJTPNCVP6UDGYMRJMK4NY3WI7GNF5D2OLCWA5IJWPHXYCXLUNJE5</td>
+            <td>Deposited 10 USDC in channel</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 7: WHY STELLAR ── -->
+  <div class="slide" id="s7">
+    <div class="slide-num">07 / 07</div>
+    <div class="slide-title">Why Stellar + x402</div>
+    <div class="slide-sub">The only blockchain with native HTTP payment primitives for machines.</div>
+
+    <div class="three-col">
+      <div class="card">
+        <div class="card-label">x402 Protocol</div>
+        <div class="card-title">HTTP-native</div>
+        <div class="card-body">
+          x402 embeds payment into HTTP headers. No blockchain RPC calls, no custom wallets. The agent's SDK handles everything in one request-response cycle.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">Soroban Auth</div>
+        <div class="card-title">Zero gas for clients</div>
+        <div class="card-body">
+          Soroban authorization entries let wallets authorize transactions without paying gas. The OZ Channels facilitator sponsors fees — agents just sign.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">OZ Channels</div>
+        <div class="card-title">Fee sponsorship</div>
+        <div class="card-body">
+          OpenZeppelin's Channels service verifies payments and settles on-chain. Publishers get direct USDC transfers. No intermediary risk.
+        </div>
+      </div>
+    </div>
+
+    <div class="sp"></div>
+
+    <div class="callout">
+      "Stellar's x402 + Soroban auth entries are the only production-ready way to do per-request on-chain micro-payments in a standard HTTP client."
+    </div>
+
+    <div class="sp"></div>
+    <div style="font-size: 13px; color: var(--muted);">
+      <span class="hl-amber">CAZZDYGZSULXCBEN7BNTBDX2DWUTWKTAQQY5ZY7NFXPCTY4RLORFAIJ</span> — live on Stellar testnet &nbsp;|&nbsp;
+      <span class="hl-green">github.com/mallikaakash/AgentSense</span> &nbsp;|&nbsp;
+      Built with Next.js · Turborepo · Stellar SDK · x402
+    </div>
+  </div>
+
+  <script>
+    // Build nav dots
+    const slides = document.querySelectorAll('.slide');
+    const nav = document.getElementById('navDots');
+    slides.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+      dot.onclick = slides[i].scrollIntoView({ behavior: 'smooth' });
+      nav.appendChild(dot);
+    });
+
+    // Highlight active dot on scroll
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          document.querySelectorAll('.nav-dot').forEach((d, i) =>
+            d.classList.toggle('active', slides[i] === e.target)
+          );
+        }
+      });
+    }, { threshold: 0.5 });
+
+    slides.forEach(s => observer.observe(s));
+  </script>
+</body>
+</html>

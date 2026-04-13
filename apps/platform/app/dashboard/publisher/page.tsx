@@ -95,13 +95,13 @@ export default function PublisherDashboard() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <p className="text-sm text-gray-500 mb-1">USDC Earned</p>
           <p className="text-4xl font-bold text-green-600">
-            ${stats.summary.totalEarnings.toFixed(4)}
+            ${stats.summary.totalEarnings.toFixed(7)}
           </p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <p className="text-sm text-gray-500 mb-1">Avg Per Query</p>
           <p className="text-4xl font-bold text-blue-600">
-            ${stats.summary.averageEarningPerQuery.toFixed(4)}
+            ${stats.summary.averageEarningPerQuery.toFixed(7)}
           </p>
         </div>
       </div>
